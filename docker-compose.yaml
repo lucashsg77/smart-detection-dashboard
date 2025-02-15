@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URI: "postgresql+psycopg2://myuser:mypassword@postgres:5432/mydatabase"
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - ./models:/app/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health_check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile.frontend
+      depends_on:
+        backend:
+          condition: service_healthy
+      ports:
+        - "5173:5173"
+      volumes:
+        - ./frontend:/app
+        - /app/node_modules
+      environment:
+        - VITE_API_URL=http://localhost:5000
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:5173"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+      command: npm run dev
+
+volumes:
+  pgdata:
