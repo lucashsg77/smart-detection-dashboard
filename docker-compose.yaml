@@ -14,6 +14,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
 
   backend:
     build:
@@ -25,6 +27,8 @@ services:
     environment:
       DATABASE_URI: "postgresql+psycopg2://myuser:mypassword@postgres:5432/mydatabase"
       PYTHONUNBUFFERED: 1
+      FLASK_ENV: "development"
+      FLASK_APP: "app.py"
     ports:
       - "5000:5000"
     volumes:
@@ -35,6 +39,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
+    networks:
+      - app-network
 
   frontend:
       build:
@@ -50,12 +57,19 @@ services:
         - /app/node_modules
       environment:
         - VITE_API_URL=http://localhost:5000
+        - HOST=0.0.0.0
+        - PORT=5173
       healthcheck:
         test: ["CMD", "curl", "-f", "http://localhost:5173"]
         interval: 30s
         timeout: 10s
         retries: 3
-      command: npm run dev
+      networks:
+        - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   pgdata:
