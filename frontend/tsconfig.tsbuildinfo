@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/Main.tsx","./src/components/CanvasOverlay.tsx","./src/components/ConfigPanel.tsx","./src/components/DetectionViewer.tsx","./src/components/ModelControl.tsx","./src/components/PredictionsTable.tsx","./src/components/VideoUploader.tsx","./src/pages/MainPage.tsx"],"version":"5.7.3"}
