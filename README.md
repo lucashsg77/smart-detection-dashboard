@@ -4,8 +4,6 @@ A full-stack web application for real-time object detection using YOLOv8, built 
 
 ![image](https://github.com/user-attachments/assets/c675b10a-3c09-4a78-81f8-511aaeb39a8c)
 
-Showcase video url: https://youtu.be/Zq7tn9qvfkk
-
 ## Features
 
 - 🎥 Real-time video processing and object detection
